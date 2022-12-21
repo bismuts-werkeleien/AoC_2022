@@ -45,29 +45,33 @@ part1 = play(deepcopy(monkeys), deepcopy(calculated))
 print(f"The monkey named root will yell {part1}")
 
 # --- part 2
-(m1, m2), op = monkeys['root']
-monkeys['root'] = ((m1, m2), "-")
+monkeys['root'] = (monkeys['root'][0], "-")
 start, lower = 0, 0
-end, upper = 1_000_000_000_000_000, 1_000_000_000_000_000  # input
-#end, upper = 1_000, 1_000  # sufficiently fo test
+end, upper = 1_000_000_000_000_000, 1_000_000_000_000_000  # for convergence on input
 half = (start + end) // 2
 monkeys['humn'] = half
+switched = False
 
 while (equality := play(deepcopy(monkeys), deepcopy(calculated))) != 0:
-    if equality < 0:
-        start = half
-    elif equality > 0:
-        end = half - 1 
-
-    if 1 <= end - start <= 2:
-        start = upper
-        end = lower
+    if not switched:
+        if equality < 0:
+            start = half + 1
+        elif equality > 0:
+            end = half - 1
+    else:
+        if equality < 0:
+            end = half - 1
+        elif equality > 0:
+            start = half + 1
+    # as we don't know whether an equality check really implies the descent direction as above,
+    # try the other way round if it wasn't successful (start and end met)
+    if 0 <= abs(end - start) <= 1:
+        start = lower
+        end = upper
+        switched = True
     half = (start + end) // 2
     monkeys['humn'] = half
 
-# could be one less due to integer division
-monkeys['humn'] = half - 1
-if play(deepcopy(monkeys), deepcopy(calculated)) != 0:
-    monkeys['humn'] = half
+monkeys['humn'] = half
 
 print(f"The monkey named humn has to yell {monkeys['humn']}")
