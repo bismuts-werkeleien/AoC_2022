@@ -1,13 +1,14 @@
 import sys
 from collections import deque
 from copy import deepcopy
+import math
 
 monkeys = dict()
 calculated = dict()
 
 def calc(op, m1, m2):
     if op == "/":
-        return m1 // m2
+        return m1 / m2
     if op == "*":
         return m1 * m2
     if op == "-":
@@ -39,7 +40,7 @@ def play(monkeys, calculated):
                     monkeys[monkey] = res
                     calculated[monkey] = res
                     if monkey == 'root':
-                        return monkeys['root']
+                        return math.floor(monkeys['root'])
 
 part1 = play(deepcopy(monkeys), deepcopy(calculated))
 print(f"The monkey named root will yell {part1}")
@@ -57,18 +58,18 @@ while (equality := play(deepcopy(monkeys), deepcopy(calculated))) != 0:
         if equality < 0:
             start = half + 1
         elif equality > 0:
-            end = half - 1
+            end = half
     else:
         if equality < 0:
             end = half - 1
         elif equality > 0:
-            start = half + 1
+            start = half
     # as we don't know whether an equality check really implies the descent direction as above,
     # try the other way round if it wasn't successful (start and end met)
-    if 0 <= abs(end - start) <= 1:
+    if 0 <= end - start <= 1:
         start = lower
         end = upper
-        switched = True
+        switched = not switched 
     half = (start + end) // 2
     monkeys['humn'] = half
 
